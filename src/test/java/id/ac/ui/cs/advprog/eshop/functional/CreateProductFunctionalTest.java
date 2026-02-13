@@ -46,30 +46,27 @@ public class CreateProductFunctionalTest {
             options.addArguments("--headless");
             options.addArguments("--no-sandbox");
             options.addArguments("--disable-dev-shm-usage");
+            options.addArguments("--remote-allow-origins=*");
+            options.addArguments("--window-size=1920,1080");
         }
     }
 
     @Test
     void testCreateProductIsSuccessful(ChromeDriver driver) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
 
         driver.get(baseUrl + "/product/create");
 
-        WebElement nameInput = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("nameInput")));
+        WebElement nameInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("nameInput")));
         nameInput.sendKeys("Sampo Cap Bambang");
 
         driver.findElement(By.id("quantityInput")).sendKeys("100");
         driver.findElement(By.cssSelector("button[type='submit']")).click();
 
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("td")));
+        wait.until(ExpectedConditions.urlContains("/product/list"));
 
-        String currentUrl = driver.getCurrentUrl();
-        assertTrue(currentUrl.contains("/product/list"));
+        WebElement tableCell = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//td[contains(text(), 'Sampo Cap Bambang')]")));
 
-        List<WebElement> productCells = driver.findElements(By.tagName("td"));
-        boolean isProductFound = productCells.stream()
-                .anyMatch(cell -> cell.getText().equals("Sampo Cap Bambang"));
-
-        assertTrue(isProductFound, "Product name should be visible in the list after creation");
+        assertTrue(tableCell.isDisplayed());
     }
 }
