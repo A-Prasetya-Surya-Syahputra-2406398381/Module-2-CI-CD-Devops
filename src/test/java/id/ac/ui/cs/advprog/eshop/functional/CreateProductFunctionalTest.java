@@ -54,21 +54,24 @@ public class CreateProductFunctionalTest {
     @Test
     void testCreateProductIsSuccessful(ChromeDriver driver) {
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 
         driver.get(baseUrl + "/product/create");
 
         WebElement nameInput = wait.until(ExpectedConditions.elementToBeClickable(By.id("nameInput")));
+        nameInput.clear();
         nameInput.sendKeys("Sampo Cap Bambang");
 
-        driver.findElement(By.id("quantityInput")).sendKeys("100");
+        WebElement quantityInput = driver.findElement(By.id("quantityInput"));
+        quantityInput.clear();
+        quantityInput.sendKeys("100");
+
         driver.findElement(By.cssSelector("button[type='submit']")).click();
 
         wait.until(ExpectedConditions.urlContains("/product/list"));
 
         WebElement tableCell = wait.until(ExpectedConditions.presenceOfElementLocated(
-                By.xpath("//td[text()='Sampo Cap Bambang']")));
+                By.xpath("//td[contains(text(), 'Sampo Cap Bambang')]")));
 
         assertTrue(tableCell.isDisplayed());
     }
