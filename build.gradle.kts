@@ -86,6 +86,6 @@ sonar {
         property("sonar.projectKey", "A-Prasetya-Surya-Syahputra-2406398381_Module-2-CI-CD-Devops")
         property("sonar.organization", "a-prasetya-surya-syahputra-2406398381")
         property("sonar.host.url", "https://sonarcloud.io")
-        property("sonar.coverage.jacoco.xmlReportPaths", "${layout.buildDirectory.get()}/reports/jacoco/test/jacocoTestReport.xml")
+        property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml")
     }
 }
