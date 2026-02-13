@@ -1,6 +1,7 @@
 plugins {
     jacoco
     java
+    id("org.sonarqube") version "4.4.1.3373"
     id("org.springframework.boot") version "3.5.10"
     id("io.spring.dependency-management") version "1.1.7"
 }
@@ -29,6 +30,7 @@ configurations {
 repositories {
     mavenCentral()
 }
+
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
@@ -77,4 +79,13 @@ tasks.test {
 
 tasks.jacocoTestReport {
     dependsOn(tasks.test)
+}
+
+sonar {
+    properties {
+        property("sonar.projectKey", "A-Prasetya-Surya-Syahputra-2406398381_Module-2-CI-CD-Devops")
+        property("sonar.organization", "a-prasetya-surya-syahputra-2406398381")
+        property("sonar.host.url", "https://sonarcloud.io")
+        property("sonar.coverage.jacoco.xmlReportPaths", "${layout.buildDirectory.get()}/reports/jacoco/test/jacocoTestReport.xml")
+    }
 }
