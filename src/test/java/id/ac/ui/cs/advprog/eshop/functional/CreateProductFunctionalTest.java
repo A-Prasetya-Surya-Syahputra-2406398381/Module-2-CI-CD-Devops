@@ -9,6 +9,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -57,6 +58,8 @@ public class CreateProductFunctionalTest {
         driver.findElement(By.id("quantityInput")).sendKeys("100");
 
         driver.findElement(By.cssSelector("button[type='submit']")).click();
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("td")));
 
         String currentUrl = driver.getCurrentUrl();
         assertTrue(currentUrl.contains("/product/list"));
