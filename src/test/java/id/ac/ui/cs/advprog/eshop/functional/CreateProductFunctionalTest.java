@@ -3,10 +3,12 @@ package id.ac.ui.cs.advprog.eshop.functional;
 import io.github.bonigarcia.seljup.SeleniumJupiter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import io.github.bonigarcia.seljup.Options;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -28,9 +30,19 @@ public class CreateProductFunctionalTest {
 
     private String baseUrl;
 
+    @Options
+    ChromeOptions options = new ChromeOptions();
+
     @BeforeEach
     void setupTest() {
         baseUrl = String.format("%s:%d", testBaseUrl, serverPort);
+
+        // Check if running in a CI environment (like GitHub Actions)
+        if (System.getenv("GITHUB_ACTIONS") != null) {
+            options.addArguments("--headless");
+            options.addArguments("--no-sandbox");
+            options.addArguments("--disable-dev-shm-usage");
+        }
     }
 
     @Test
