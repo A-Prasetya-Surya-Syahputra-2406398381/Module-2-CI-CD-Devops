@@ -47,37 +47,84 @@ public class CreateProductFunctionalTest {
             options.addArguments("--remote-allow-origins=*");
             options.addArguments("--window-size=1920,1080");
             options.addArguments("--disable-gpu");
+            options.addArguments("--disable-extensions");
+            options.addArguments("--disable-setuid-sandbox");
         }
     }
 
     @Test
-    void testCreateProductIsSuccessful(ChromeDriver driver) {
-        // Remove implicit wait - use only explicit waits
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
+    void testCreateProductIsSuccessful(ChromeDriver driver) throws InterruptedException {
+        // Increase wait time significantly for CI
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(60));
 
-        // Navigate to create product page
-        driver.get(baseUrl + "/product/create");
+        // Give the application extra time to stabilize in CI
+        if (System.getenv("GITHUB_ACTIONS") != null) {
+            Thread.sleep(5000);
+        }
 
-        // Wait for page to load by checking a unique element
-        WebElement nameInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("nameInput")));
-        nameInput.clear();
-        nameInput.sendKeys("Sampo Cap Bambang");
+        try {
+            // Navigate to create product page
+            driver.get(baseUrl + "/product/create");
+            System.out.println("Navigated to: " + driver.getCurrentUrl());
 
-        WebElement quantityInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("quantityInput")));
-        quantityInput.clear();
-        quantityInput.sendKeys("100");
+            // Wait for the page to be fully loaded
+            wait.until(driver1 ->
+                    ((org.openqa.selenium.JavascriptExecutor) driver1)
+                            .executeScript("return document.readyState").equals("complete"));
 
-        // Wait for submit button to be clickable
-        WebElement submitButton = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button[type='submit']")));
-        submitButton.click();
+            // Wait for name input to be visible and interactable
+            WebElement nameInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("nameInput")));
+            wait.until(ExpectedConditions.elementToBeClickable(By.id("nameInput")));
+            nameInput.clear();
+            nameInput.sendKeys("Sampo Cap Bambang");
+            System.out.println("Entered product name");
 
-        // Wait for redirect to list page
-        wait.until(ExpectedConditions.urlContains("/product/list"));
+            // Wait for quantity input
+            WebElement quantityInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("quantityInput")));
+            wait.until(ExpectedConditions.elementToBeClickable(By.id("quantityInput")));
+            quantityInput.clear();
+            quantityInput.sendKeys("100");
+            System.out.println("Entered quantity");
 
-        // Wait for the table to load and find the product
-        WebElement tableCell = wait.until(ExpectedConditions.visibilityOfElementLocated(
-                By.xpath("//td[contains(text(), 'Sampo Cap Bambang')]")));
+            // Wait for submit button and click
+            WebElement submitButton = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button[type='submit']")));
+            submitButton.click();
+            System.out.println("Clicked submit button");
 
-        assertTrue(tableCell.isDisplayed(), "Product 'Sampo Cap Bambang' should be visible in the product list");
+            // Wait for redirect with longer timeout
+            wait.until(ExpectedConditions.urlContains("/product/list"));
+            System.out.println("Redirected to: " + driver.getCurrentUrl());
+
+            // Wait for page to be fully loaded again
+            wait.until(driver1 ->
+                    ((org.openqa.selenium.JavascriptExecutor) driver1)
+                            .executeScript("return document.readyState").equals("complete"));
+
+            // Extra wait for table to render in CI
+            if (System.getenv("GITHUB_ACTIONS") != null) {
+                Thread.sleep(2000);
+            }
+
+            // Wait for the table cell with retry
+            WebElement tableCell = wait.until(ExpectedConditions.presenceOfElementLocated(
+                    By.xpath("//td[contains(text(), 'Sampo Cap Bambang')]")));
+
+            // Scroll to element to ensure visibility
+            ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", tableCell);
+
+            // Wait for it to be visible
+            wait.until(ExpectedConditions.visibilityOf(tableCell));
+            System.out.println("Found product in table");
+
+            assertTrue(tableCell.isDisplayed(), "Product 'Sampo Cap Bambang' should be displayed in the list");
+
+        } catch (Exception e) {
+            System.err.println("=== TEST FAILED ===");
+            System.err.println("Current URL: " + driver.getCurrentUrl());
+            System.err.println("Page Title: " + driver.getTitle());
+            System.err.println("Page Source:");
+            System.err.println(driver.getPageSource());
+            throw e;
+        }
     }
-}   
+}
