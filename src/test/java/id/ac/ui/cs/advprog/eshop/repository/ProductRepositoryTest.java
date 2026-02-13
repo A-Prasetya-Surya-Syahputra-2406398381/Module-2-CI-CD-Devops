@@ -143,4 +143,55 @@ public class ProductRepositoryTest {
         assertNotNull(result);
         assertEquals("Barang Aman", result.getProductName());
     }
+
+    @Test
+    void testCreateProductWithNullIdGeneratesUuid() {
+        Product product = new Product();
+        product.setProductName("Product Tanpa ID");
+        product.setProductQuantity(10);
+
+        productRepository.create(product);
+
+        assertNotNull(product.getProductId());
+        assertFalse(product.getProductId().isEmpty());
+
+        Product found = productRepository.findById(product.getProductId());
+        assertEquals("Product Tanpa ID", found.getProductName());
+    }
+
+    @Test
+    void testCreateNullProductThrowsException() {
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            productRepository.create(null);
+        });
+
+        assertTrue(exception.getMessage().contains("Product cannot be null"));
+    }
+
+    @Test
+    void testFindByIdNotFound() {
+        Product result = productRepository.findById("non-existent-id");
+
+        assertNull(result);
+    }
+
+    @Test
+    void testUpdateCorrectProductInList() {
+        Product p1 = new Product();
+        p1.setProductId("id-1");
+        productRepository.create(p1);
+
+        Product p2 = new Product();
+        p2.setProductId("id-2");
+        productRepository.create(p2);
+
+        Product updatedP2 = new Product();
+        updatedP2.setProductId("id-2");
+        updatedP2.setProductName("New Name");
+
+        productRepository.update(updatedP2);
+
+        assertEquals("New Name", productRepository.findById("id-2").getProductName());
+        assertNull(productRepository.findById("id-1").getProductName());
+    }
 }
