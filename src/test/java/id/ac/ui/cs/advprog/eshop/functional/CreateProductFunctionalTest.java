@@ -16,8 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import java.time.Duration;
 
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
@@ -48,31 +46,38 @@ public class CreateProductFunctionalTest {
             options.addArguments("--disable-dev-shm-usage");
             options.addArguments("--remote-allow-origins=*");
             options.addArguments("--window-size=1920,1080");
+            options.addArguments("--disable-gpu");
         }
     }
 
     @Test
     void testCreateProductIsSuccessful(ChromeDriver driver) {
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+        // Remove implicit wait - use only explicit waits
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
 
+        // Navigate to create product page
         driver.get(baseUrl + "/product/create");
 
-        WebElement nameInput = wait.until(ExpectedConditions.elementToBeClickable(By.id("nameInput")));
+        // Wait for page to load by checking a unique element
+        WebElement nameInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("nameInput")));
         nameInput.clear();
         nameInput.sendKeys("Sampo Cap Bambang");
 
-        WebElement quantityInput = driver.findElement(By.id("quantityInput"));
+        WebElement quantityInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("quantityInput")));
         quantityInput.clear();
         quantityInput.sendKeys("100");
 
-        driver.findElement(By.cssSelector("button[type='submit']")).click();
+        // Wait for submit button to be clickable
+        WebElement submitButton = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button[type='submit']")));
+        submitButton.click();
 
+        // Wait for redirect to list page
         wait.until(ExpectedConditions.urlContains("/product/list"));
 
-        WebElement tableCell = wait.until(ExpectedConditions.presenceOfElementLocated(
+        // Wait for the table to load and find the product
+        WebElement tableCell = wait.until(ExpectedConditions.visibilityOfElementLocated(
                 By.xpath("//td[contains(text(), 'Sampo Cap Bambang')]")));
 
-        assertTrue(tableCell.isDisplayed());
+        assertTrue(tableCell.isDisplayed(), "Product 'Sampo Cap Bambang' should be visible in the product list");
     }
-}
+}   
