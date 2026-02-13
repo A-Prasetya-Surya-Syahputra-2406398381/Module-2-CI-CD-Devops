@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Product</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <h2 class="mt-4">Edit Product</h2>
+    <hr>
+
+    <div th:if="${error}" class="alert alert-danger col-4" role="alert">
+        <span th:text="${error}"></span>
+    </div>
+
+    <form th:action="@{/product/edit}" th:object="${product}" method="POST">
+        <input type="hidden" th:field="*{productId}" />
+
+        <div class="form-group">
+            <label for="productName">Product Name</label>
+            <input type="text" th:field="*{productName}" id="productName"
+                   class="form-control mb-4 col-4" required>
+        </div>
+
+        <div class="form-group">
+            <label for="productQuantity">Quantity</label>
+            <input type="number" th:field="*{productQuantity}" id="productQuantity"
+                   class="form-control mb-4 col-4" min="0" required>
+            <small class="form-text text-muted">Jumlah tidak boleh kurang dari 0.</small>
+        </div>
+
+        <button type="submit" class="btn btn-info col-2">Update Product</button>
+    </form>
+
+    <hr>
+    <a th:href="@{/product/list}" class="btn btn-secondary btn-sm">Back to Product List</a>
+</div>
+</body>
+</html>
