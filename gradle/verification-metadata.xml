@@ -42,8 +42,8 @@
             <trusting group="io.rest-assured"/>
             <trusting group="org.awaitility"/>
          </trusted-key>
-         <trusted-key id="ff6e0c2707397228" group="org.junit"/>
-         <trusted-key id="5ec29aa7a389170a" group="org.junit"/>
+         <trusted-key id="6F0E16389744A39F00474605FF6E0C2707397228" group="org.junit"/>
+         <trusted-key id="FF6CB582294E2744B9C49D945EC29AA7A389170A" group="org.junit"/>
          <trusted-key id="0B743A794876D3C78AB542A118D239B1CBCD2236" group="org.glassfish.jersey" name="jersey-bom" version="3.1.11"/>
          <trusted-key id="0D35D3F60078655126908E8AF3D1600878E85A3D" group="io.netty" name="netty-bom" version="4.1.130.Final"/>
          <trusted-key id="10F3C7A02ECA55E502BADCF3991EFB94DB91127D" group="org.ow2" name="ow2" version="1.5.1"/>
