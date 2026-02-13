@@ -42,8 +42,9 @@ class FunctionalTest {
 
     @BeforeEach
     void setupTest() {
-        baseUrl = String.format("%s:%d", testBaseUrl, serverPort);
-
+        String host = testBaseUrl.contains("localhost") ? "http://127.0.0.1" : testBaseUrl;
+        baseUrl = String.format("%s:%d", host, serverPort);
+        
         // Check if running in a CI environment (like GitHub Actions)
         if (System.getenv("GITHUB_ACTIONS") != null) {
             options.addArguments("--headless");
