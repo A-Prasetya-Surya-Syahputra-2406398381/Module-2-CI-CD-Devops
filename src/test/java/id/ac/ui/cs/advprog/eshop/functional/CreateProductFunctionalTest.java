@@ -9,9 +9,11 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import java.time.Duration;
 
 import java.util.List;
 
@@ -47,6 +49,7 @@ public class CreateProductFunctionalTest {
 
     @Test
     void testCreateProductIsSuccessful(ChromeDriver driver) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         // 1. Buka halaman Create Product
         driver.get(baseUrl + "/product/create");
 
