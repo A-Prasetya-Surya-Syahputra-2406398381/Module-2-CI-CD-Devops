@@ -51,12 +51,13 @@ public class CreateProductFunctionalTest {
     @Test
     void testCreateProductIsSuccessful(ChromeDriver driver) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        // 1. Buka halaman Create Product
+
         driver.get(baseUrl + "/product/create");
 
-        driver.findElement(By.id("nameInput")).sendKeys("Sampo Cap Bambang");
-        driver.findElement(By.id("quantityInput")).sendKeys("100");
+        WebElement nameInput = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("nameInput")));
+        nameInput.sendKeys("Sampo Cap Bambang");
 
+        driver.findElement(By.id("quantityInput")).sendKeys("100");
         driver.findElement(By.cssSelector("button[type='submit']")).click();
 
         wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("td")));
